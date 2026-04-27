@@ -1,78 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8">
-    <title>Payment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة الدفع - MyFirstApp</title>
 
     <script src="https://api.gammal.tech/sdk-web.js"></script>
 
     <style>
-        body {
-            font-family: Arial;
-            text-align: center;
-            padding-top: 50px;
-        }
-
-        #status {
-            margin-top: 20px;
-            font-size: 18px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            display: inline-block;
-            min-width: 250px;
-        }
-
-        button {
-            font-size: 20px;
-            padding: 10px 20px;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .btn-pay { font-size: 20px; padding: 15px 30px; cursor: pointer; background-color: #28a745; color: white; border: none; border-radius: 5px; }
+        #status-display { margin-top: 30px; padding: 15px; border: 1px solid #ccc; background: #f9f9f9; min-height: 50px; text-align: right; }
+        .log-entry { margin-bottom: 10px; border-bottom: 1px dotted #ddd; padding-bottom: 5px; }
     </style>
 </head>
-
 <body>
 
-<h2>ادفع الآن</h2>
+    <h1>إتمام عملية الدفع</h1>
+    
+    <p>اضغط على الزر أدناه لبدء عملية الدفع بمبلغ 100 جنيه مصري.</p>
 
-<button onclick="payNow()">Pay 100 EGP</button>
+    <button id="payButton" class="btn-pay" onclick="payNow()">
+        ادفع 100 جنيه الآن
+    </button>
 
-<div id="status">جاهز...</div>
+    <div id="status-display" aria-live="polite">
+        <strong>حالة العملية (مراقب النظام):</strong>
+        <div id="logs">في انتظار بدء العملية...</div>
+    </div>
 
-<script>
-
-function setStatus(msg) {
-    document.getElementById("status").innerText = msg;
-}
-
-window.onload = function () {
-
-    if (window.GammalTech) {
-        setStatus("SDK loaded successfully ✅");
-    } else {
-        setStatus("SDK NOT loaded ❌");
-    }
-};
-
-function payNow() {
-
-    try {
-
-        if (!window.GammalTech) {
-            setStatus("SDK غير موجود ❌");
-            return;
+    <script>
+        // وظيفة مساعدة لعرض الرسائل على الشاشة بدلاً من الـ Console
+        function logToScreen(message) {
+            const logsDiv = document.getElementById('logs');
+            const newLog = document.createElement('div');
+            newLog.className = 'log-entry';
+            newLog.innerText = "• " + message;
+            logsDiv.prepend(newLog); // إضافة الرسالة الجديدة في الأعلى
         }
 
-        setStatus("جاري فتح الدفع... ⏳");
+        // 1. تهيئة المشروع باستخدام المعرف الخاص بك (121)
+        try {
+            GammalTech.init(121);
+            logToScreen("تم تهيئة النظام بنجاح للمشروع رقم 121");
+        } catch (e) {
+            logToScreen("خطأ في التهيئة: " + e.message);
+        }
 
-        GammalTech.pay(100, 'My Product', function () {
-            setStatus("تم الدفع بنجاح 🎉");
-        });
+        function payNow() {
+            logToScreen("بدء استدعاء نافذة الدفع... جاري التحميل");
+            
+            try {
+                // 2. تنفيذ عملية الدفع
+                GammalTech.pay(100, 'My Product', function (response) {
+                    // هذه الدالة تنفذ عند نجاح العملية
+                    logToScreen("تم استلام استجابة من الخادم ✅");
+                    alert('تمت عملية الدفع بنجاح 🎉');
+                });
+            } catch (error) {
+                logToScreen("حدث خطأ تقني: " + error.message);
+            }
+        }
 
-    } catch (e) {
-        setStatus("Error: " + e.message);
-    }
-}
-
-</script>
+        // التأكد من تحميل المكتبة
+        window.onload = function() {
+            if (typeof GammalTech !== 'undefined') {
+                logToScreen("مكتبة GammalTech جاهزة للعمل ✅");
+            } else {
+                logToScreen("خطأ: لم يتم تحميل مكتبة SDK، تأكد من اتصال الإنترنت");
+            }
+        };
+    </script>
 
 </body>
 </html>
