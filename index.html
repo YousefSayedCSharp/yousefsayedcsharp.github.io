@@ -2,42 +2,55 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8">
-    <title>بوابة دفع يوسف</title>
+    <title>بوابة الدفع - تسجيل الدخول أولاً</title>
     <script src="https://api.gammal.tech/sdk-web.js?v=121"></script>
 </head>
 <body style="text-align:center; padding-top:50px; font-family: sans-serif;">
 
-    <h1>دفع آمن - MyFirstApp</h1>
+    <h1>بوابة دفع مشروع يوسف</h1>
 
-    <button id="payBtn" style="padding:20px; font-size:20px; cursor:pointer;">
-        اضغط هنا لفتح نافذة الدفع
+    <button id="loginBtn" style="padding:15px; font-size:18px; background-color: #0056b3; color: white; border: none; border-radius: 5px; cursor:pointer;">
+        1. تسجيل الدخول (اضغط هنا أولاً)
     </button>
 
-    <div id="status" aria-live="assertive" style="margin-top:20px; color:red; font-weight:bold;">
-        </div>
+    <br><br>
+
+    <button id="payBtn" style="padding:15px; font-size:18px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor:pointer;">
+        2. ادفع الآن (بعد تسجيل الدخول)
+    </button>
+
+    <div id="status" aria-live="assertive" style="margin-top:20px; color: blue;">
+        الحالة: في انتظار تسجيل الدخول...
+    </div>
 
     <script>
+        const statusDiv = document.getElementById('status');
+
+        // وظيفة زر تسجيل الدخول
+        document.getElementById('loginBtn').onclick = function() {
+            statusDiv.innerText = "جاري فتح نافذة تسجيل الدخول...";
+            GammalTech.login(function (user) {
+                // هذه الدالة تنفذ بعد نجاح تسجيل الدخول
+                statusDiv.style.color = "green";
+                statusDiv.innerText = "تم تسجيل الدخول بنجاح! يمكنك الدفع الآن.";
+                console.log("User logged in:", user);
+            });
+        };
+
+        // وظيفة زر الدفع
         document.getElementById('payBtn').onclick = function() {
-            const statusDiv = document.getElementById('status');
-            statusDiv.innerText = "جاري الاتصال بالخادم... يرجى الانتظار ثواني";
-
+            statusDiv.style.color = "orange";
+            statusDiv.innerText = "جاري محاولة فتح نافذة الدفع...";
+            
             try {
-                // الطريقة الأكثر استقراراً: تمرير السعر، الوصف، ودالة النجاح
                 GammalTech.pay(100, 'My Product', function (response) {
-                    alert('تمت عملية الدفع بنجاح 🎉');
                     statusDiv.style.color = "green";
-                    statusDiv.innerText = "تم الدفع بنجاح!";
+                    statusDiv.innerText = "تمت عملية الدفع بنجاح 🎉";
+                    alert('شكراً لك! تم الدفع بنجاح.');
                 });
-
-                // سنقوم بعمل فحص بعد 5 ثوانٍ
-                setTimeout(function() {
-                    if (statusDiv.innerText.includes("جاري الاتصال")) {
-                        statusDiv.innerText = "تنبيه: إذا لم تظهر نافذة، يرجى التأكد من أن ملف gammal-tech.html يحتوي على سجل المكتبة.";
-                    }
-                }, 5000);
-
             } catch (err) {
-                statusDiv.innerText = "خطأ برمجي: " + err.message;
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "خطأ: " + err.message;
             }
         };
     </script>
