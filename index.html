@@ -2,27 +2,43 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8">
-    <title>بوابة الدفع</title>
-    <script src="https://api.gammal.tech/sdk-web.js"></script>
+    <title>بوابة دفع يوسف</title>
+    <script src="https://api.gammal.tech/sdk-web.js?v=121"></script>
 </head>
-<body style="text-align:center; padding-top:50px;">
+<body style="text-align:center; padding-top:50px; font-family: sans-serif;">
 
-    <h2>مشروع يوسف - الدفع السريع</h2>
+    <h1>دفع آمن - MyFirstApp</h1>
 
-    <button id="payBtn" style="padding:20px; font-size:18px;">
+    <button id="payBtn" style="padding:20px; font-size:20px; cursor:pointer;">
         اضغط هنا لفتح نافذة الدفع
     </button>
 
-    <div id="status" style="margin-top:20px; color:blue;"></div>
+    <div id="status" aria-live="assertive" style="margin-top:20px; color:red; font-weight:bold;">
+        </div>
 
     <script>
         document.getElementById('payBtn').onclick = function() {
-            document.getElementById('status').innerText = "جاري محاولة فتح النافذة... يرجى فحص شريط العنوان";
-            
-            // استدعاء مباشر جداً لتقليل احتمالية الحظر
-            GammalTech.pay(100, 'My Product', function (response) {
-                alert('تمت العملية بنجاح');
-            });
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerText = "جاري الاتصال بالخادم... يرجى الانتظار ثواني";
+
+            try {
+                // الطريقة الأكثر استقراراً: تمرير السعر، الوصف، ودالة النجاح
+                GammalTech.pay(100, 'My Product', function (response) {
+                    alert('تمت عملية الدفع بنجاح 🎉');
+                    statusDiv.style.color = "green";
+                    statusDiv.innerText = "تم الدفع بنجاح!";
+                });
+
+                // سنقوم بعمل فحص بعد 5 ثوانٍ
+                setTimeout(function() {
+                    if (statusDiv.innerText.includes("جاري الاتصال")) {
+                        statusDiv.innerText = "تنبيه: إذا لم تظهر نافذة، يرجى التأكد من أن ملف gammal-tech.html يحتوي على سجل المكتبة.";
+                    }
+                }, 5000);
+
+            } catch (err) {
+                statusDiv.innerText = "خطأ برمجي: " + err.message;
+            }
         };
     </script>
 
