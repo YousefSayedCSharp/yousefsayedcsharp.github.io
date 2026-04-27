@@ -5,21 +5,73 @@
     <title>Payment</title>
 
     <script src="https://api.gammal.tech/sdk-web.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 18px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            display: inline-block;
+            min-width: 250px;
+        }
+
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+        }
+    </style>
 </head>
-<body style="font-family: Arial; text-align:center; padding-top:50px;">
+
+<body>
 
 <h2>ادفع الآن</h2>
 
-<button onclick="payNow()" style="font-size:20px;padding:10px 20px;">
-    Pay 100 EGP
-</button>
+<button onclick="payNow()">Pay 100 EGP</button>
+
+<div id="status">جاهز...</div>
 
 <script>
-function payNow() {
-    GammalTech.pay(100, 'My Product', function () {
-        alert('Payment Success 🎉');
-    });
+
+function setStatus(msg) {
+    document.getElementById("status").innerText = msg;
 }
+
+window.onload = function () {
+
+    if (window.GammalTech) {
+        setStatus("SDK loaded successfully ✅");
+    } else {
+        setStatus("SDK NOT loaded ❌");
+    }
+};
+
+function payNow() {
+
+    try {
+
+        if (!window.GammalTech) {
+            setStatus("SDK غير موجود ❌");
+            return;
+        }
+
+        setStatus("جاري فتح الدفع... ⏳");
+
+        GammalTech.pay(100, 'My Product', function () {
+            setStatus("تم الدفع بنجاح 🎉");
+        });
+
+    } catch (e) {
+        setStatus("Error: " + e.message);
+    }
+}
+
 </script>
 
 </body>
