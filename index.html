@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Payment</title>
+
+    <script src="https://api.gammal.tech/sdk-web.js"></script>
+</head>
+<body style="font-family: Arial; text-align:center; padding-top:50px;">
+
+<h2>ادفع الآن</h2>
+
+<button onclick="payNow()" style="font-size:20px;padding:10px 20px;">
+    Pay 100 EGP
+</button>
+
+<script>
+function payNow() {
+    GammalTech.pay(100, 'My Product', function () {
+        alert('Payment Success 🎉');
+    });
+}
+</script>
+
+</body>
+</html>
