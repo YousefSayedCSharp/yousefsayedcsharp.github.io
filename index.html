@@ -2,71 +2,27 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صفحة الدفع المحدثة</title>
-
+    <title>بوابة الدفع</title>
     <script src="https://api.gammal.tech/sdk-web.js"></script>
-
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; line-height: 1.6; }
-        .btn-pay { font-size: 20px; padding: 15px 30px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 5px; }
-        #status-display { margin-top: 30px; padding: 15px; border: 2px solid #000; background: #fff; text-align: right; }
-        .log-entry { margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
-    </style>
 </head>
-<body>
+<body style="text-align:center; padding-top:50px;">
 
-    <h1>نظام الدفع - إصدار 121</h1>
-    
-    <button id="payButton" class="btn-pay" onclick="payNow()">
-        ادفع 100 جنيه الآن
+    <h2>مشروع يوسف - الدفع السريع</h2>
+
+    <button id="payBtn" style="padding:20px; font-size:18px;">
+        اضغط هنا لفتح نافذة الدفع
     </button>
 
-    <div id="status-display" aria-live="polite">
-        <strong>سجل الأحداث لقارئ الشاشة:</strong>
-        <div id="logs">في انتظار ضغط الزر...</div>
-    </div>
+    <div id="status" style="margin-top:20px; color:blue;"></div>
 
     <script>
-        function logToScreen(message) {
-            const logsDiv = document.getElementById('logs');
-            const newLog = document.createElement('div');
-            newLog.className = 'log-entry';
-            newLog.innerText = "• " + message;
-            logsDiv.prepend(newLog);
-        }
-
-        function payNow() {
-            logToScreen("محاولة فتح نافذة الدفع للمشروع 121...");
+        document.getElementById('payBtn').onclick = function() {
+            document.getElementById('status').innerText = "جاري محاولة فتح النافذة... يرجى فحص شريط العنوان";
             
-            try {
-                /* تعديل: تمرير رقم المشروع 121 كمعامل إضافي 
-                   إذا كانت المكتبة تطلب الرقم داخل دالة الدفع
-                */
-                GammalTech.pay(100, 'My Product', function (response) {
-                    logToScreen("تمت العملية بنجاح! استجابة الخادم: " + JSON.stringify(response));
-                    alert('تم الدفع بنجاح 🎉');
-                }, 121); // الرقم 121 تمت إضافته هنا كمعامل رابع
-
-            } catch (error) {
-                logToScreen("حدث خطأ عند استدعاء الدالة: " + error.message);
-                
-                // محاولة بديلة إذا كانت الدالة تقبل المعاملات بترتيب مختلف
-                logToScreen("جاري محاولة الطريقة البديلة...");
-                try {
-                    GammalTech.pay(100, 'My Product', function() { alert('نجاح'); });
-                } catch (e2) {
-                    logToScreen("فشلت جميع المحاولات البرمجية: " + e2.message);
-                }
-            }
-        }
-
-        window.onload = function() {
-            if (typeof GammalTech !== 'undefined') {
-                logToScreen("المكتبة محملة وجاهزة ✅");
-            } else {
-                logToScreen("فشل تحميل المكتبة، تأكد من الاتصال");
-            }
+            // استدعاء مباشر جداً لتقليل احتمالية الحظر
+            GammalTech.pay(100, 'My Product', function (response) {
+                alert('تمت العملية بنجاح');
+            });
         };
     </script>
 
